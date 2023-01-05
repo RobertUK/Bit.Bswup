@@ -3,7 +3,7 @@
 Bit platform is the home for .NET developers. 
 Bit provides dotnet source templates such as TodoTemplate and AdminPanel template. In these project templates, common features such as Sign-up & Sign-in, are available using C#, HTML, and CSS, with which most of the .NET developers are familiar.
 
-The following apps are available out of the box with simple configurations:
+The following apps are available out of the box with simple configuations:
 * Android app with full access to platform features
 * iOS app with full access to platform features
 * Windows app with full access to platform features
