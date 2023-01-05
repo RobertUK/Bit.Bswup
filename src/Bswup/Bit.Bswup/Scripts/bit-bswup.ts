@@ -98,7 +98,9 @@
 
         function startBlazor() {
             const scriptTags = [].slice.call(document.scripts);
-
+            const displayLoadingProgress = bitBswupScript.attributes['displayLoadingProgress'] ?? false;
+            console.log('displayLoadingProgress' + displayLoadingProgress);
+           // console.log('test');
             const blazorWasmScriptTag = scriptTags.find(s => s.src && s.src.indexOf('_framework/blazor.webassembly.js') !== -1);
             if (!blazorWasmScriptTag) {
                 warn('"blazor.webassembly.js" script tag not found!');
@@ -112,7 +114,39 @@
             }
 
             if (navigator.serviceWorker.controller) {
-                Blazor.start();
+                var i = 0;
+                var allResourcesBeingLoaded = [];
+                
+                if (displayLoadingProgress)
+                    Blazor.start({ // start manually with loadBootResource
+                        loadBootResource: function (type, name, defaultUri, integrity) {
+                            if (type == "dotnetjs")
+                                return defaultUri;
+
+                            var f = fetch(defaultUri, {
+                                cache: 'no-cache',
+                                integrity: integrity,
+                                headers: { 'MyCustomHeader': 'My custom value' }
+                            });
+
+                            allResourcesBeingLoaded.push(f);
+                            f.then((r) => {
+                                i++;
+                                var app = document.getElementsByTagName("app")[0];
+                                var l = allResourcesBeingLoaded.length;
+                                const progressLabel = document.getElementById('progressLabel');
+                                const progressbar = document.getElementById('progressbar');
+                                
+                                const percentLoaded = (100 * i / l);
+                                progressbar.style.width = percentLoaded + '%';
+                                console.log(100 * i / l);
+                                progressLabel.innerText = "Downloading: " + name + " (" + i + "/" + l +")";
+                            });
+                            return f;
+                        }
+                    });
+                else
+                    Blazor.start();
             }
         }
 
